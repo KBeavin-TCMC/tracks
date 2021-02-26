@@ -3,9 +3,9 @@ import { StyleSheet, View, Text } from 'react-native';
 
 const SigninScreen = () => {
     return (
-        <View>
-            <Text style={{fontSize: 48}}>SigninScreen</Text>
-        </View>
+      <>
+        <Text style={{ fontSize: 48 }}>SigninScreen</Text>
+      </>
     );
 }
 
