@@ -11,8 +11,8 @@ const getLocation = increment => {
             accuracy: 5,
             altitudeAccuracy: 5,
             altitude: 5,
-            longitude: -86.1467178 + increment * tenMetersWithDegrees,
-            latitude: 39.9591593 + increment * tenMetersWithDegrees
+            latitude: 39.9591593 + increment * tenMetersWithDegrees,
+            longitude: -86.1467178 + increment * tenMetersWithDegrees
         }
     };
 };
@@ -24,4 +24,5 @@ setInterval(() => {
         watchId: Location._getCurrentWatchId(),
         location: getLocation(counter)
     });
+    counter++;
 }, 1000);

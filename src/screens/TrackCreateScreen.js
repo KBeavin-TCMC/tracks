@@ -1,54 +1,36 @@
-import '../_mockLocation';
-import React, { useEffect, useState, useContext } from "react";
-import { StyleSheet } from "react-native";
-import { SafeAreaView } from "react-navigation";
+import "../_mockLocation";
+import React, { useContext, useCallback } from "react";
+import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-elements";
-import { requestPermissionsAsync, watchPositionAsync, Accuracy } from "expo-location";
 import Map from "../components/Map";
-import { Context as LocationContext } from '../context/LocationContext';
+import { withNavigationFocus } from 'react-navigation';
+import { Context as LocationContext } from "../context/LocationContext";
+import useLocation from "../hooks/useLocation";
+import TrackForm from "../components/TrackForm";
 
-const TrackCreateScreen = () => {
-    const { addLocation } = useContext(LocationContext);
-  const [err, setErr] = useState(null);
-
-  useEffect(() => {
-    startWatching();
-  }, []);
-
-  const startWatching = async () => {
-    try {
-      const { granted } = await requestPermissionsAsync();
-
-      if (!granted) {
-        throw new Error("Location permission not granted");
-      }
-
-      await watchPositionAsync({
-          accuracy: Accuracy.BestForNavigation,
-          timeInterval: 1000,
-          distanceInterval: 10
-      }, (location) => {
-        addLocation(location);
-      });
-
-    } catch (e) {
-      setErr(e);
-    }
-  };
-
+const TrackCreateScreen = ({ isFocused }) => {
+  const { state: { recording }, addLocation } = useContext(LocationContext);
+  const callback = useCallback((location) => {
+    addLocation(location, recording);
+  }, [recording])
+  const [err] = useLocation(isFocused || recording, callback);
+  
   return (
-    <SafeAreaView forceInset={{ top: "always" }}>
+    <View style={{marginTop: 20}}>
       <Text h2>TrackCreateScreen</Text>
       <Map />
-      {err ? <Text style={styles.err}>Please enable location services.</Text> : null}
-    </SafeAreaView>
+      {err ? (
+        <Text style={styles.err}>Please enable location services.</Text>
+      ) : null}
+      <TrackForm />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-    err: {
-        color: 'red',
-    }
+  err: {
+    color: "red",
+  },
 });
 
-export default TrackCreateScreen;
+export default withNavigationFocus(TrackCreateScreen);
